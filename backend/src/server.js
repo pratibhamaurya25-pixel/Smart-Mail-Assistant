@@ -1,0 +1,25 @@
+
+import dotenv from "dotenv";
+import app from "./app.js";
+import connectDB from "./config/db.js";
+
+dotenv.config();
+
+const port = process.env.PORT || 5000;
+
+async function startServer() {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is missing. Add it to backend/.env.");
+  }
+
+  await connectDB();
+
+  app.listen(port, () => {
+    console.log(`API server listening on port ${port}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error(`Server failed to start: ${error.message}`);
+  process.exit(1);
+});
