@@ -52,6 +52,8 @@ Open the local URL printed by Vite, usually `http://localhost:5173`.
 
 Enter your name at the top of the dashboard to open your inbox. Messages are addressed using names rather than accounts. The app remembers your name in this browser. To send a message, enter the receiver's name, a subject, and a message. The receiver can see it by opening the app and entering the same name.
 
+After a message is saved, use its voice player to read it aloud. Inbox messages also have a **Listen** button. Playback uses the browser's built-in Web Speech API and starts only when requested. Choose an available browser voice, adjust the speech speed, and use the playback controls to pause, resume, stop, or mute speech. Voice availability depends on the browser and its installed voices.
+
 ## API
 
 | Method | Path | Purpose |

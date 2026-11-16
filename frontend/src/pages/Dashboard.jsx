@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios.js";
+import VoicePlayer, { useVoiceAssistant } from "../components/VoicePlayer.jsx";
 
 function getErrorMessage(error) {
   return error.response?.data?.message || "Could not connect to the server. Please try again.";
 }
 
-function MessageList({ messages, type, onDelete, deletingId }) {
+function MessageList({
+  messages,
+  type,
+  onDelete,
+  deletingId,
+  onListen,
+  currentMessageId,
+  speechStatus,
+}) {
   if (messages.length === 0) {
     return <p className="empty-state">No messages here yet.</p>;
   }
@@ -21,15 +30,29 @@ function MessageList({ messages, type, onDelete, deletingId }) {
               </p>
               <h3>{message.subject}</h3>
             </div>
-            <button
-              className="delete-button"
-              type="button"
-              onClick={() => onDelete(message._id)}
-              disabled={deletingId === message._id}
-              aria-label={`Delete message: ${message.subject}`}
-            >
-              {deletingId === message._id ? "Deleting..." : "Delete"}
-            </button>
+            <div className="message-actions">
+              {type === "inbox" && (
+                <button
+                  className="listen-button"
+                  type="button"
+                  onClick={() => onListen(message)}
+                  aria-label={`Listen to message: ${message.subject}`}
+                >
+                  {currentMessageId === message._id && speechStatus !== "idle"
+                    ? "Currently reading"
+                    : "Listen"}
+                </button>
+              )}
+              <button
+                className="delete-button"
+                type="button"
+                onClick={() => onDelete(message._id)}
+                disabled={deletingId === message._id}
+                aria-label={`Delete message: ${message.subject}`}
+              >
+                {deletingId === message._id ? "Deleting..." : "Delete"}
+              </button>
+            </div>
           </div>
           <p className="message-body">{message.message}</p>
           <time className="message-date" dateTime={message.createdAt}>
@@ -57,6 +80,9 @@ export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [sentVoiceMessage, setSentVoiceMessage] = useState(null);
+  const [listeningMessage, setListeningMessage] = useState(null);
+  const voiceAssistant = useVoiceAssistant();
 
   useEffect(() => {
     if (!activeName) {
@@ -111,15 +137,17 @@ export default function Dashboard() {
     event.preventDefault();
     setError("");
     setNotice("");
+    setSentVoiceMessage(null);
     setSubmitting(true);
 
     try {
-      await api.post("/emails/send", {
+      const response = await api.post("/emails/send", {
         senderName: activeName,
         receiverName: receiverName.trim(),
         subject: subject.trim(),
         message: message.trim(),
       });
+      setSentVoiceMessage(response.data.email);
       setReceiverName("");
       setSubject("");
       setMessage("");
@@ -146,6 +174,11 @@ export default function Dashboard() {
     } finally {
       setDeletingId("");
     }
+  }
+
+  function listenToMessage(email) {
+    setListeningMessage(email);
+    voiceAssistant.play(email);
   }
 
   return (
@@ -229,6 +262,13 @@ export default function Dashboard() {
         <div className="message-sections">
           {error && <p className="feedback error" role="alert">{error}</p>}
           {notice && <p className="feedback success" role="status">{notice}</p>}
+          {sentVoiceMessage && (
+            <VoicePlayer
+              message={sentVoiceMessage}
+              playerId="sent-message"
+              voiceAssistant={voiceAssistant}
+            />
+          )}
 
           <section className="panel messages-panel" aria-labelledby="inbox-title">
             <div className="section-heading">
@@ -238,6 +278,13 @@ export default function Dashboard() {
               </div>
               <span className="message-count">{inbox.length}</span>
             </div>
+            {listeningMessage && (
+              <VoicePlayer
+                message={listeningMessage}
+                playerId="inbox-message"
+                voiceAssistant={voiceAssistant}
+              />
+            )}
             {loadingMessages ? (
               <p className="empty-state">Loading your inbox...</p>
             ) : (
@@ -246,6 +293,9 @@ export default function Dashboard() {
                 type="inbox"
                 onDelete={deleteMessage}
                 deletingId={deletingId}
+                onListen={listenToMessage}
+                currentMessageId={voiceAssistant.currentMessageId}
+                speechStatus={voiceAssistant.status}
               />
             )}
           </section>
@@ -266,6 +316,9 @@ export default function Dashboard() {
                 type="sent"
                 onDelete={deleteMessage}
                 deletingId={deletingId}
+                onListen={listenToMessage}
+                currentMessageId={voiceAssistant.currentMessageId}
+                speechStatus={voiceAssistant.status}
               />
             )}
           </section>

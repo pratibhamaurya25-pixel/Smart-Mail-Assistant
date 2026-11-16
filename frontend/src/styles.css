@@ -22,7 +22,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -272,6 +273,26 @@ h3 {
   gap: 12px;
 }
 
+.message-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.listen-button,
+.voice-secondary-button {
+  border: 1px solid #dfe4ed;
+  background: #fff;
+  color: #4f62d8;
+}
+
+.listen-button:hover:not(:disabled),
+.voice-secondary-button:hover:not(:disabled) {
+  background: #f3f4ff;
+}
+
 .message-person {
   margin: 0;
   color: #667085;
@@ -334,6 +355,115 @@ h3 {
   color: #24744a;
 }
 
+.voice-player {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #dfe4ff;
+  border-radius: 11px;
+  background: #f8f9ff;
+}
+
+.voice-player-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.voice-player-label {
+  margin: 0 0 5px;
+  color: #6875c5;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.voice-player h3 {
+  margin: 0;
+}
+
+.voice-status {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: #e8ebff;
+  color: #4f62d8;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.voice-message-preview {
+  max-height: 100px;
+  margin: 10px 0 13px;
+  overflow: auto;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.voice-settings {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.voice-settings label {
+  display: grid;
+  min-width: 150px;
+  gap: 6px;
+}
+
+.voice-settings select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #dfe4ed;
+  border-radius: 8px;
+  background: #fff;
+  color: #344054;
+}
+
+.voice-settings .speech-rate {
+  display: flex;
+  min-width: min(100%, 190px);
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}
+
+.speech-rate span {
+  color: #737d8e;
+  font-size: 12px;
+}
+
+.voice-settings input[type="range"] {
+  width: 100%;
+  padding: 0;
+  accent-color: #4f62d8;
+}
+
+.voice-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.voice-controls button {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.voice-feedback {
+  margin: 10px 0 0;
+  color: #737d8e;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 @media (max-width: 760px) {
   .dashboard {
     padding: 28px 18px 42px;
@@ -367,5 +497,13 @@ h3 {
   .name-control {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .message-heading {
+    flex-direction: column;
+  }
+
+  .message-actions {
+    justify-content: flex-start;
   }
 }
